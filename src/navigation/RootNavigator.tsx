@@ -32,8 +32,8 @@ const AuthStack = createNativeStackNavigator();
 const AuthNavigator = () => (
   <AuthStack.Navigator screenOptions={{ headerShown: false }}>
     <AuthStack.Screen name="Welcome" component={WelcomeScreen} />
-    <AuthStack.Screen name="Login" component={LoginScreen} />
-    <AuthStack.Screen name="Signup" component={SignupScreen} />
+    <AuthStack.Screen name="Login" component={LoginScreen as any} />
+    <AuthStack.Screen name="Signup" component={SignupScreen as any} />
   </AuthStack.Navigator>
 );
 
@@ -81,12 +81,12 @@ const UserNavigator = () => (
     />
     <UserStack.Screen
       name="ChatThread"
-      component={ChatThreadScreen}
+      component={ChatThreadScreen as any}
       options={{ headerShown: false }}
     />
     <UserStack.Screen
       name="PropertyDetail"
-      component={PropertyDetailScreen}
+      component={PropertyDetailScreen as any}
       options={{ headerShown: false }}
     />
   </UserStack.Navigator>
@@ -159,7 +159,7 @@ const DealerNavigator = () => (
     />
     <DealerStack.Screen
       name="PropertyDetail"
-      component={PropertyDetailScreen}
+      component={PropertyDetailScreen as any}
       options={{ headerShown: false }}
     />
   </DealerStack.Navigator>

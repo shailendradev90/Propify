@@ -38,7 +38,7 @@ const DealerDashboardScreen: React.FC = () => {
     return unsub;
   }, [user]);
 
-  const StatCard: React.FC<{ icon: string; label: string; value: number; color: string }> = ({
+  const StatCard: React.FC<{ icon: any; label: string; value: number; color: string }> = ({
     icon,
     label,
     value,

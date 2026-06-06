@@ -31,7 +31,12 @@ const PropertiesListScreen: React.FC<Props> = ({ navigation, route }) => {
       }
     | undefined;
   const [items, setItems] = useState<Property[]>([]);
-  const [filters, setFilters] = useState({ 
+  const [filters, setFilters] = useState<{
+    sectors: string[];
+    minPrice: number;
+    maxPrice: number;
+    listingType: ListingType | 'all';
+  }>({ 
     sectors: [],
     minPrice: 0,
     maxPrice: Number.MAX_VALUE,
@@ -77,7 +82,7 @@ const PropertiesListScreen: React.FC<Props> = ({ navigation, route }) => {
       // Filter by sectors if any are selected
       if (filters?.sectors && filters.sectors.length > 0) {
         if (!item.sector) return false;
-        const itemSectorLower = item.sector.toLowerCase().trim();
+        const itemSectorLower = (item.sector as string).toLowerCase().trim();
         const matchesSector = filters.sectors.some(
           sector => itemSectorLower.includes(sector.toLowerCase().trim())
         );

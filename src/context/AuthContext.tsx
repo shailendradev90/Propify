@@ -20,6 +20,9 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue>({
   loading: true,
   user: null,
+  favorites: [],
+  toggleFavorite: () => {},
+  isFavorite: () => false,
   signOut: async () => {},
   refresh: async () => {},
   loginAsDemo: () => {},

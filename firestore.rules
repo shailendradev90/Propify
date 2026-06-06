@@ -1,0 +1,153 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidEmail(email) {
+      return email.matches('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$');
+    }
+    
+    function isValidPhone(phone) {
+      return phone == null || phone.matches('^\\+?[1-9]\\d{9,14}$');
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone authenticated can read user profiles (needed for property owner info)
+      allow read: if isAuthenticated();
+      
+      // Users can only create/update their own profile
+      allow create: if isOwner(userId) 
+                    && request.resource.data.uid == userId
+                    && isValidEmail(request.resource.data.email)
+                    && isValidPhone(request.resource.data.get('phone', null))
+                    && request.resource.data.role in ['user', 'dealer'];
+      
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == userId
+                    && request.resource.data.email == resource.data.email // Email cannot be changed
+                    && isValidPhone(request.resource.data.get('phone', null));
+      
+      // Users cannot delete their profile (use Firebase Auth for account deletion)
+      allow delete: if false;
+    }
+    
+    // Properties collection
+    match /properties/{propertyId} {
+      // Anyone authenticated can read available properties
+      allow read: if isAuthenticated();
+      
+      // Only authenticated users with dealer role can create properties
+      allow create: if isAuthenticated()
+                    && request.resource.data.ownerId == request.auth.uid
+                    && request.resource.data.status == 'available'
+                    && request.resource.data.price is number
+                    && request.resource.data.price > 0
+                    && request.resource.data.price < 10000000000
+                    && request.resource.data.bedrooms is number
+                    && request.resource.data.bedrooms >= 0
+                    && request.resource.data.bedrooms <= 20
+                    && request.resource.data.bathrooms is number
+                    && request.resource.data.bathrooms >= 0
+                    && request.resource.data.bathrooms <= 20
+                    && request.resource.data.areaSqft is number
+                    && request.resource.data.areaSqft > 0
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() >= 5
+                    && request.resource.data.title.size() <= 200
+                    && request.resource.data.city is string
+                    && request.resource.data.city.size() >= 2
+                    && request.resource.data.city.size() <= 100
+                    && request.resource.data.pincode is string
+                    && request.resource.data.pincode.matches('^\\d{6}$')
+                    && request.resource.data.listingType in ['buy', 'rent', 'pg/hostel']
+                    && request.resource.data.propertyType in ['apartment', 'builder-floor', 'villa', 'plot', 'commercial', 'all']
+                    && isValidPhone(request.resource.data.get('ownerPhone', null));
+      
+      // Only property owner can update their properties
+      allow update: if isAuthenticated()
+                    && resource.data.ownerId == request.auth.uid
+                    && request.resource.data.ownerId == resource.data.ownerId // Owner cannot be changed
+                    && request.resource.data.price > 0
+                    && request.resource.data.price < 10000000000
+                    && request.resource.data.bedrooms >= 0
+                    && request.resource.data.bedrooms <= 20
+                    && request.resource.data.bathrooms >= 0
+                    && request.resource.data.bathrooms <= 20;
+      
+      // Only property owner can delete their properties
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+    
+    // Inquiries collection
+    match /inquiries/{inquiryId} {
+      // Users can read their own inquiries, dealers can read inquiries for their properties
+      allow read: if isAuthenticated() 
+                  && (request.auth.uid == resource.data.userId 
+                      || request.auth.uid == resource.data.dealerId);
+      
+      // Only authenticated users can create inquiries
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.propertyId is string
+                    && request.resource.data.propertyTitle is string
+                    && request.resource.data.userName is string
+                    && request.resource.data.userEmail is string
+                    && isValidEmail(request.resource.data.userEmail)
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() >= 10
+                    && request.resource.data.message.size() <= 1000
+                    && request.resource.data.status in ['new', 'in-progress', 'closed']
+                    && isValidPhone(request.resource.data.get('userPhone', null));
+      
+      // Only dealers can update inquiry status
+      allow update: if isAuthenticated()
+                    && request.auth.uid == resource.data.dealerId
+                    && request.resource.data.userId == resource.data.userId // User cannot be changed
+                    && request.resource.data.propertyId == resource.data.propertyId // Property cannot be changed
+                    && request.resource.data.status in ['new', 'in-progress', 'closed'];
+      
+      // Users can delete their own inquiries
+      allow delete: if isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isAuthenticated() && request.auth.uid == resource.data.userId;
+      
+      // Only server/cloud functions can create notifications
+      // In production, use Cloud Functions to create notifications
+      allow create: if isAuthenticated()
+                    && request.resource.data.userId is string
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() <= 100
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 500
+                    && request.resource.data.type in ['inquiry', 'booking', 'approval', 'general']
+                    && request.resource.data.read == false;
+      
+      // Users can only mark their own notifications as read
+      allow update: if isAuthenticated()
+                    && request.auth.uid == resource.data.userId
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+                    && request.resource.data.read == true;
+      
+      // Users cannot delete notifications
+      allow delete: if false;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

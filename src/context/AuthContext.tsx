@@ -15,6 +15,7 @@ interface AuthContextValue {
   signOut: () => Promise<void>;
   refresh: () => Promise<void>;
   loginAsDemo: (role: UserRole) => void;
+  loginWithPhone: (user: AppUser) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextValue>({
   signOut: async () => {},
   refresh: async () => {},
   loginAsDemo: () => {},
+  loginWithPhone: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -73,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [favorites]);
 
   useEffect(() => {
-    if (isDemoMode) {
+    if (isDemoMode || demo) {
       setLoading(false);
       return;
     }
@@ -126,6 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role,
         createdAt: Date.now(),
       });
+      setLoading(false);
+    },
+    loginWithPhone: (phoneUser: AppUser) => {
+      setDemo(true); // Prevent Firebase auth listener from overriding
+      setUser(phoneUser);
       setLoading(false);
     },
   };

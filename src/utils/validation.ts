@@ -105,7 +105,6 @@ export const propertySchema = yup.object({
     .matches(/^\+?[1-9]\d{9,14}$/, 'Invalid phone number format'),
   imageUrl: yup
     .string()
-    .url('Invalid URL format')
     .nullable(),
 });
 

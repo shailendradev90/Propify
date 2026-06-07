@@ -45,6 +45,7 @@ export interface Property {
     longitude: number;
   };
   images: string[];
+  videos?: string[];
   status: PropertyStatus;
   amenities?: string[];
   nearbyPlaces?: string[];

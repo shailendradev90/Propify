@@ -11,16 +11,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.propify.app",
-      "buildNumber": "1.0.0",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -30,10 +25,9 @@
       "package": "com.propify.app",
       "versionCode": 1,
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO"
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -49,7 +43,7 @@
       "firebaseAppId": "1:720452952998:web:42099ae2f632f5ee4ae567",
       "firebaseMeasurementId": "G-12LTTC2ZHL",
       "eas": {
-        "projectId": "12882287-099b-44d0-aa14-b2a2af54a1a8"
+        "projectId": "your-project-id-will-be-added-by-eas"
       }
     },
     "plugins": [
@@ -58,9 +52,7 @@
         {
           "photosPermission": "The app needs access to your photos to upload property images."
         }
-      ],
-      "expo-font"
-    ],
-    "owner": "shailendra90"
+      ]
+    ]
   }
 }

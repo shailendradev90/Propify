@@ -30,6 +30,7 @@ const PropertiesListScreen: React.FC<Props> = ({ navigation, route }) => {
         propertyType?: PropertyType;
       }
     | undefined;
+  const selectedCity = (route.params?.city as string) || '';
   const [items, setItems] = useState<Property[]>([]);
   const [filters, setFilters] = useState<{
     sectors: string[];
@@ -75,6 +76,12 @@ const PropertiesListScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
+      // Filter by city from HomeScreen selection
+      const cityFilter = (route.params?.city as string) || '';
+      if (cityFilter && item.city !== cityFilter) {
+        return false;
+      }
+
       if (selectedCategory?.propertyType && item.propertyType !== selectedCategory.propertyType) {
         return false;
       }
@@ -105,7 +112,7 @@ const PropertiesListScreen: React.FC<Props> = ({ navigation, route }) => {
       
       return true;
     });
-  }, [items, selectedCategory?.propertyType, filters?.sectors, filters?.minPrice, filters?.maxPrice]);
+  }, [items, selectedCategory?.propertyType, filters?.sectors, filters?.minPrice, filters?.maxPrice, route.params?.city]);
 
   useEffect(() => {
     setPage(1);

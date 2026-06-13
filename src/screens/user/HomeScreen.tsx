@@ -143,7 +143,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.heroContent}>
               <Text style={styles.heroTitle}>Find Your{'\n'}Dream Home</Text>
               <Text style={styles.heroSubtitle}>Buy, Rent and PG/Hostels Properties</Text>
-              <Pressable style={styles.exploreButton} onPress={() => navigation.navigate('PropertiesList')}>
+              <Pressable style={styles.exploreButton} onPress={() => navigation.navigate('PropertiesList', { city: selectedCity })}>
                 <Text style={styles.exploreButtonText}>Explore Now →</Text>
               </Pressable>
             </View>
@@ -172,7 +172,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 icon={category.icon}
                 label={category.label}
                 color={category.color}
-                onPress={() => navigation.navigate('PropertiesList', { category })}
+                onPress={() => navigation.navigate('PropertiesList', { category, city: selectedCity })}
               />
             ))}
           </ScrollView>
@@ -182,7 +182,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recently Added</Text>
-            <Pressable onPress={() => navigation.navigate('PropertiesList')}>
+            <Pressable onPress={() => navigation.navigate('PropertiesList', { city: selectedCity })}>
               <Text style={styles.seeAll}>See All</Text>
             </Pressable>
           </View>

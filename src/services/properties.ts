@@ -14,6 +14,7 @@ import { db, isDemoMode } from './firebase';
 import { mockStore } from './mockStore';
 import { getAppUser } from './auth';
 import { createNotification } from './notifications';
+import { getCached, setCache, invalidateCachePattern } from './cache';
 import { Inquiry, ListingType, Property, PropertyStatus, PropertyType } from '../types';
 
 const COL = 'properties';
@@ -33,6 +34,8 @@ export const createProperty = async (
     createdAt: Date.now(),
   });
   const ref = await addDoc(collection(db, COL), payload);
+  // Invalidate property caches since data changed
+  invalidateCachePattern('properties_');
   return ref.id;
 };
 
@@ -66,13 +69,26 @@ export const removeContactedProperty = async (userId: string, propertyId: string
   await Promise.all(snap.docs.map(d => deleteDoc(d.ref)));
 };
 
-// Subscribes to available properties (auto-excludes sold/rented).
+// Subscribes to available properties with caching (stale-while-revalidate).
 export const subscribeAvailable = (
   listingType: ListingType | 'all',
   onChange: (items: Property[]) => void,
   propertyType?: PropertyType,
 ) => {
   if (isDemoMode) return mockStore.subscribeAvailable(listingType, onChange, propertyType);
+
+  const cacheKey = `properties_${listingType}_${propertyType || 'all'}`;
+  let cacheEmitted = false;
+
+  // Try to emit cached data immediately (stale-while-revalidate)
+  getCached<Property[]>(cacheKey).then(cached => {
+    if (cached && cached.length > 0 && !cacheEmitted) {
+      cacheEmitted = true;
+      onChange(cached);
+    }
+  });
+
+  // Set up real-time Firestore listener
   const base = collection(db, COL);
   const constraints = [where('status', '==', 'available')] as any[];
   if (listingType !== 'all') {
@@ -88,6 +104,9 @@ export const subscribeAvailable = (
       ...(d.data() as Omit<Property, 'id'>),
     }));
     items.sort((a, b) => b.createdAt - a.createdAt);
+    cacheEmitted = true;
+    // Update cache for this query
+    setCache(cacheKey, items, 5 * 60 * 1000); // 5 min TTL
     onChange(items);
   });
 };
@@ -112,16 +131,19 @@ export const subscribeDealerProperties = (
 export const markAsSoldOrRented = async (id: string) => {
   if (isDemoMode) return mockStore.deleteProperty(id);
   await deleteDoc(doc(db, COL, id));
+  invalidateCachePattern('properties_');
 };
 
 export const updateProperty = async (id: string, patch: Partial<Property>) => {
   if (isDemoMode) return mockStore.updateProperty(id, patch);
   await updateDoc(doc(db, COL, id), patch as any);
+  invalidateCachePattern('properties_');
 };
 
 export const deleteProperty = async (id: string) => {
   if (isDemoMode) return mockStore.deleteProperty(id);
   await deleteDoc(doc(db, COL, id));
+  invalidateCachePattern('properties_');
 };
 
 export const createInquiry = async (

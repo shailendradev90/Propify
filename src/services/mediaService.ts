@@ -129,6 +129,32 @@ export const uploadMultipleMedia = async (
 };
 
 /**
+ * Upload a profile photo to the profile-photos folder in Firebase Storage.
+ */
+export const uploadProfilePhoto = async (
+  asset: MediaAsset,
+  userId: string,
+): Promise<string> => {
+  if (isDemoMode) {
+    await new Promise(resolve => setTimeout(resolve, 500));
+    return asset.uri;
+  }
+
+  const storagePath = `profile-photos/${userId}/${asset.name}`;
+  const storageRef = ref(storage, storagePath);
+
+  const response = await fetch(asset.uri);
+  const blob = await response.blob();
+
+  const snapshot = await uploadBytes(storageRef, blob, {
+    contentType: 'image/jpeg',
+  });
+
+  const downloadURL = await getDownloadURL(snapshot.ref);
+  return downloadURL;
+};
+
+/**
  * Delete a media file from Firebase Storage by its download URL.
  */
 export const deleteMedia = async (url: string): Promise<void> => {

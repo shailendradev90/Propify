@@ -19,6 +19,14 @@ export interface AppUser {
   createdAt: number;
   subscriptionPlan?: SubscriptionPlan;
   subscriptionExpiry?: number;
+  // Dealer-specific fields
+  businessName?: string;
+  reraNumber?: string;
+  businessAddress?: string;
+  businessCity?: string;
+  businessPhone?: string;
+  businessWebsite?: string;
+  profilePhoto?: string;
 }
 
 export interface Property {

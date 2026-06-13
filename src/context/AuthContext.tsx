@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { subscribeAuth, getAppUser, signOut as fbSignOut } from '../services/auth';
+import { subscribeAuth, getAppUser, signOut as fbSignOut, updateUserProfile } from '../services/auth';
 import { isDemoMode } from '../services/firebase';
 import { AppUser, UserRole } from '../types';
 
@@ -16,6 +16,7 @@ interface AuthContextValue {
   refresh: () => Promise<void>;
   loginAsDemo: (role: UserRole) => void;
   loginWithPhone: (user: AppUser) => void;
+  updateProfile: (data: Partial<AppUser>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -28,6 +29,7 @@ const AuthContext = createContext<AuthContextValue>({
   refresh: async () => {},
   loginAsDemo: () => {},
   loginWithPhone: () => {},
+  updateProfile: async () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -134,6 +136,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDemo(true); // Prevent Firebase auth listener from overriding
       setUser(phoneUser);
       setLoading(false);
+    },
+    updateProfile: async (data: Partial<AppUser>) => {
+      if (!user) return;
+      if (demo) {
+        // In demo mode, just update local state
+        setUser({ ...user, ...data });
+        return;
+      }
+      await updateUserProfile(user.uid, data);
+      // Refresh user data from Firestore
+      const updated = await getAppUser(user.uid);
+      if (updated) setUser(updated);
     },
   };
 

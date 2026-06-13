@@ -5,7 +5,7 @@ import {
   onAuthStateChanged,
   User as FbUser,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { AppUser, UserRole } from '../types';
 import { validateAndSanitizeSignup, validateLogin } from '../utils/validation';
@@ -92,4 +92,8 @@ export const signOut = () => fbSignOut(auth);
 export const getAppUser = async (uid: string): Promise<AppUser | null> => {
   const snap = await getDoc(doc(db, 'users', uid));
   return snap.exists() ? (snap.data() as AppUser) : null;
+};
+
+export const updateUserProfile = async (uid: string, data: Partial<AppUser>): Promise<void> => {
+  await updateDoc(doc(db, 'users', uid), data as any);
 };

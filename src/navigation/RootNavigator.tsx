@@ -22,6 +22,9 @@ import ChatScreen from '../screens/user/ChatScreen';
 import ChatThreadScreen from '../screens/user/ChatThreadScreen';
 import FiltersScreen from '../screens/user/FiltersScreen';
 import PropertiesListScreen from '../screens/user/PropertiesListScreen';
+import EditProfileScreen from '../screens/dealer/EditProfileScreen';
+import BusinessDetailsScreen from '../screens/dealer/BusinessDetailsScreen';
+import SubscriptionScreen from '../screens/dealer/SubscriptionScreen';
 
 import DealerDashboardScreen from '../screens/dealer/DashboardScreen';
 import MyPropertiesScreen from '../screens/dealer/MyPropertiesScreen';
@@ -88,6 +91,11 @@ const UserNavigator = () => (
     <UserStack.Screen
       name="PropertyDetail"
       component={PropertyDetailScreen as any}
+      options={{ headerShown: false }}
+    />
+    <UserStack.Screen
+      name="EditProfile"
+      component={EditProfileScreen}
       options={{ headerShown: false }}
     />
   </UserStack.Navigator>
@@ -161,6 +169,31 @@ const DealerNavigator = () => (
     <DealerStack.Screen
       name="PropertyDetail"
       component={PropertyDetailScreen as any}
+      options={{ headerShown: false }}
+    />
+    <DealerStack.Screen
+      name="EditProfile"
+      component={EditProfileScreen}
+      options={{ headerShown: false }}
+    />
+    <DealerStack.Screen
+      name="BusinessDetails"
+      component={BusinessDetailsScreen}
+      options={{ headerShown: false }}
+    />
+    <DealerStack.Screen
+      name="Subscription"
+      component={SubscriptionScreen}
+      options={{ headerShown: false }}
+    />
+    <DealerStack.Screen
+      name="MyProperties"
+      component={MyPropertiesScreen}
+      options={{ headerShown: false }}
+    />
+    <DealerStack.Screen
+      name="Notifications"
+      component={NotificationsScreen}
       options={{ headerShown: false }}
     />
   </DealerStack.Navigator>

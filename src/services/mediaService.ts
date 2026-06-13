@@ -130,6 +130,7 @@ export const uploadMultipleMedia = async (
 
 /**
  * Upload a profile photo to the profile-photos folder in Firebase Storage.
+ * Falls back to local URI if Firebase upload fails.
  */
 export const uploadProfilePhoto = async (
   asset: MediaAsset,
@@ -140,18 +141,24 @@ export const uploadProfilePhoto = async (
     return asset.uri;
   }
 
-  const storagePath = `profile-photos/${userId}/${asset.name}`;
-  const storageRef = ref(storage, storagePath);
+  try {
+    const storagePath = `profile-photos/${userId}/${asset.name}`;
+    const storageRef = ref(storage, storagePath);
 
-  const response = await fetch(asset.uri);
-  const blob = await response.blob();
+    const response = await fetch(asset.uri);
+    const blob = await response.blob();
 
-  const snapshot = await uploadBytes(storageRef, blob, {
-    contentType: 'image/jpeg',
-  });
+    const snapshot = await uploadBytes(storageRef, blob, {
+      contentType: 'image/jpeg',
+    });
 
-  const downloadURL = await getDownloadURL(snapshot.ref);
-  return downloadURL;
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
+  } catch (error: any) {
+    console.warn('Profile photo upload failed, using local URI:', error?.message || error);
+    // Fall back to local URI so the photo still displays in the app
+    return asset.uri;
+  }
 };
 
 /**

@@ -110,6 +110,24 @@ export interface Subscription {
   unlimitedListings: boolean;
 }
 
+export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
+
+export interface Payment {
+  id: string;
+  dealerId: string;
+  plan: SubscriptionPlan;
+  amountInPaise: number;       // e.g. 49900 = ₹499
+  currency: string;            // 'inr'
+  status: PaymentStatus;
+  gateway: 'razorpay';
+  razorpayOrderId?: string;    // Razorpay order ID (order_xxx)
+  razorpayPaymentId?: string;  // Razorpay payment ID after success (pay_xxx)
+  upiId?: string;              // UPI VPA used, if available
+  method?: string;             // 'upi' | 'card' | 'netbanking' | 'wallet'
+  createdAt: number;
+  completedAt?: number;
+}
+
 export interface FilterOptions {
   propertyType: PropertyType;
   priceRange: { min: number; max: number };

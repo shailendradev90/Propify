@@ -21,6 +21,7 @@ export default {
   expo: {
     name: 'CredoKin',
     slug: 'credokin',
+    scheme: 'credokin',   // deep-link scheme for payment callbacks
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/app-icon-512.png',
@@ -74,6 +75,11 @@ export default {
       firebaseMessagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID ?? '',
       firebaseAppId: process.env.FIREBASE_APP_ID ?? '',
       firebaseMeasurementId: process.env.FIREBASE_MEASUREMENT_ID ?? '',
+      // ── Razorpay ─────────────────────────────────────────────────────────────
+      // Get your Key ID from https://dashboard.razorpay.com/app/keys
+      // Use rzp_test_xxx for testing, rzp_live_xxx for production
+      razorpayKeyId: process.env.RAZORPAY_KEY_ID ?? '',
+
       // ── EAS ─────────────────────────────────────────────────────────────────
       // Run `eas init` once to populate the real project ID, or set via env var.
       eas: {

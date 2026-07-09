@@ -31,7 +31,7 @@ const validateFirebaseConfig = () => {
   if (missingKeys.length > 0) {
     console.warn(
       `Missing Firebase configuration: ${missingKeys.join(', ')}. ` +
-      'Running in demo mode. Please check your app.json extra config.'
+      'Running in demo mode. Copy .env.example → .env and fill in your Firebase credentials.',
     );
     return false;
   }

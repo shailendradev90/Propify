@@ -228,21 +228,23 @@ export const subscribeDealerInquiries = (
 ) => {
   if (isDemoMode) return mockStore.subscribeDealerInquiries(dealerId, onChange);
 
+  // Query 1: inquiries that already have this dealer's ID stamped on them.
   const inquiriesByDealerQ = query(collection(db, 'inquiries'), where('dealerId', '==', dealerId));
+  // Query 2: the dealer's own properties (to find legacy inquiries missing dealerId).
   const propertiesByDealerQ = query(collection(db, COL), where('ownerId', '==', dealerId));
 
   let directDealerInquiries: Inquiry[] = [];
+  let inquiriesForOwnedProps: Inquiry[] = [];
   let ownerPropertyIds = new Set<string>();
-  let allInquiries: Inquiry[] = [];
   let emitVersion = 0;
 
   const emit = async () => {
     const currentVersion = ++emitVersion;
+    // Merge direct dealer inquiries with any legacy inquiries on owned properties.
     const merged = [
       ...directDealerInquiries,
-      ...allInquiries.filter(i => !i.dealerId && ownerPropertyIds.has(i.propertyId)),
+      ...inquiriesForOwnedProps.filter(i => !i.dealerId),
     ];
-
     const deduped = Array.from(new Map(merged.map(i => [i.id, i])).values());
     deduped.sort((a, b) => b.createdAt - a.createdAt);
     const enriched = await enrichInquiryContacts(deduped);
@@ -250,6 +252,7 @@ export const subscribeDealerInquiries = (
     onChange(enriched);
   };
 
+  // Listener 1: inquiries where dealerId matches directly.
   const unsubDirect = onSnapshot(inquiriesByDealerQ, snap => {
     directDealerInquiries = snap.docs.map(d => ({
       id: d.id,
@@ -258,22 +261,44 @@ export const subscribeDealerInquiries = (
     void emit();
   });
 
+  // Listener 2: track which property IDs the dealer owns, then query
+  // inquiries for those properties (avoids a full-collection read).
+  let unsubPropertyInquiries: (() => void) | null = null;
+
   const unsubProps = onSnapshot(propertiesByDealerQ, snap => {
     ownerPropertyIds = new Set(snap.docs.map(d => d.id));
-    void emit();
-  });
 
-  const unsubAll = onSnapshot(collection(db, 'inquiries'), snap => {
-    allInquiries = snap.docs.map(d => ({
-      id: d.id,
-      ...(d.data() as Omit<Inquiry, 'id'>),
-    }));
-    void emit();
+    // Tear down the old property-inquiry listener before re-subscribing.
+    if (unsubPropertyInquiries) {
+      unsubPropertyInquiries();
+      unsubPropertyInquiries = null;
+    }
+
+    if (ownerPropertyIds.size === 0) {
+      inquiriesForOwnedProps = [];
+      void emit();
+      return;
+    }
+
+    // Firestore `in` supports up to 30 values; slice to be safe.
+    const propertyIdList = Array.from(ownerPropertyIds).slice(0, 30);
+    const propInquiriesQ = query(
+      collection(db, 'inquiries'),
+      where('propertyId', 'in', propertyIdList),
+    );
+
+    unsubPropertyInquiries = onSnapshot(propInquiriesQ, inquirySnap => {
+      inquiriesForOwnedProps = inquirySnap.docs.map(d => ({
+        id: d.id,
+        ...(d.data() as Omit<Inquiry, 'id'>),
+      }));
+      void emit();
+    });
   });
 
   return () => {
     unsubDirect();
     unsubProps();
-    unsubAll();
+    if (unsubPropertyInquiries) unsubPropertyInquiries();
   };
 };

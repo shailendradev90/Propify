@@ -47,6 +47,7 @@ service cloud.firestore {
       
       // Only authenticated users with dealer role can create properties
       allow create: if isAuthenticated()
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'dealer'
                     && request.resource.data.ownerId == request.auth.uid
                     && request.resource.data.status == 'available'
                     && request.resource.data.price is number

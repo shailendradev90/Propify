@@ -4,7 +4,7 @@ import { subscribeAuth, getAppUser, signOut as fbSignOut, updateUserProfile } fr
 import { isDemoMode } from '../services/firebase';
 import { AppUser, UserRole } from '../types';
 
-const FAVORITES_KEY = '@propify_favorites';
+const FAVORITES_KEY = '@credokin_favorites';
 
 interface AuthContextValue {
   loading: boolean;

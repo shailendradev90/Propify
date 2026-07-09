@@ -80,7 +80,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.logoIcon}>
                 <Ionicons name="home" size={20} color={colors.bgWhite} />
               </View>
-              <Text style={styles.logoText}>Propify</Text>
+              <Text style={styles.logoText}>CredoKin</Text>
             </View>
             <View style={styles.headerIcons}>
               <Pressable

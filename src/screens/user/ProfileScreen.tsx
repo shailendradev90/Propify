@@ -94,7 +94,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     },
     {
       icon: 'information-circle-outline',
-      label: 'About Propify',
+      label: 'About CredoKin',
       subtitle: 'Version 1.0.0',
       screen: 'About',
     },

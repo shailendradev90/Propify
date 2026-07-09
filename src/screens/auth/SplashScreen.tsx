@@ -132,7 +132,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
               transform: [{ translateY: slideUpAnim }],
             }}
           >
-            <Text style={styles.brandName}>Propify</Text>
+            <Text style={styles.brandName}>CredoKin</Text>
           </Animated.View>
 
           {/* Tagline */}

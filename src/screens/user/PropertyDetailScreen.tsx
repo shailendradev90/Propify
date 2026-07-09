@@ -108,7 +108,7 @@ const PropertyDetailScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const whatsapp = () => {
     if (ownerPhone) {
-      const message = `Hi, I'm interested in your property "${property.title}" listed on Propify. Can you provide more details?`;
+      const message = `Hi, I'm interested in your property "${property.title}" listed on CredoKin. Can you provide more details?`;
       const encodedMessage = encodeURIComponent(message);
       const phone = ownerPhone.replace(/\D/g, '');
       Linking.openURL(`https://wa.me/${phone}?text=${encodedMessage}`);

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CACHE_PREFIX = '@propify_cache_';
+const CACHE_PREFIX = '@credokin_cache_';
 const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
 
 interface CacheEntry<T> {

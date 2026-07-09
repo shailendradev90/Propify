@@ -21,7 +21,7 @@ const generateOtp = (): string => {
  */
 const phoneToEmail = (phone: string): string => {
   const cleaned = phone.replace(/[^0-9]/g, '');
-  return `user${cleaned}@propify.app`;
+  return `user${cleaned}@credokin.app`;
 };
 
 /**

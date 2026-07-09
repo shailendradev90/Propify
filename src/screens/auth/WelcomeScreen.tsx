@@ -77,7 +77,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
                 <Ionicons name="home" size={32} color={colors.bgWhite} />
               </View>
             </View>
-            <Text style={styles.brandName}>Propify</Text>
+            <Text style={styles.brandName}>CredoKin</Text>
             <Text style={styles.tagline}>Your trusted property partner</Text>
 
             {/* Trust badges */}

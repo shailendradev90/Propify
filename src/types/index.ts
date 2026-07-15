@@ -8,8 +8,6 @@ export type PropertyType = 'all' | 'apartment' | 'builder-floor' | 'villa' | 'pl
 
 export type InquiryStatus = 'new' | 'in-progress' | 'closed';
 
-export type SubscriptionPlan = 'basic' | 'standard' | 'premium';
-
 export interface AppUser {
   uid: string;
   email: string;
@@ -17,8 +15,6 @@ export interface AppUser {
   phone?: string;
   role: UserRole;
   createdAt: number;
-  subscriptionPlan?: SubscriptionPlan;
-  subscriptionExpiry?: number;
   // Dealer-specific fields
   businessName?: string;
   reraNumber?: string;
@@ -97,35 +93,6 @@ export interface ChatMessage {
   message: string;
   timestamp: number;
   read: boolean;
-}
-
-export interface Subscription {
-  plan: SubscriptionPlan;
-  price: number;
-  duration: string;
-  features: string[];
-  activeListings: number;
-  prioritySupport: boolean;
-  featuredListing: boolean;
-  unlimitedListings: boolean;
-}
-
-export type PaymentStatus = 'pending' | 'completed' | 'failed' | 'refunded';
-
-export interface Payment {
-  id: string;
-  dealerId: string;
-  plan: SubscriptionPlan;
-  amountInPaise: number;       // e.g. 49900 = ₹499
-  currency: string;            // 'inr'
-  status: PaymentStatus;
-  gateway: 'razorpay';
-  razorpayOrderId?: string;    // Razorpay order ID (order_xxx)
-  razorpayPaymentId?: string;  // Razorpay payment ID after success (pay_xxx)
-  upiId?: string;              // UPI VPA used, if available
-  method?: string;             // 'upi' | 'card' | 'netbanking' | 'wallet'
-  createdAt: number;
-  completedAt?: number;
 }
 
 export interface FilterOptions {

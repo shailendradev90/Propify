@@ -24,8 +24,6 @@ import FiltersScreen from '../screens/user/FiltersScreen';
 import PropertiesListScreen from '../screens/user/PropertiesListScreen';
 import EditProfileScreen from '../screens/dealer/EditProfileScreen';
 import BusinessDetailsScreen from '../screens/dealer/BusinessDetailsScreen';
-import SubscriptionScreen from '../screens/dealer/SubscriptionScreen';
-
 import DealerDashboardScreen from '../screens/dealer/DashboardScreen';
 import MyPropertiesScreen from '../screens/dealer/MyPropertiesScreen';
 import AddPropertyScreen from '../screens/dealer/AddPropertyScreen';
@@ -179,11 +177,6 @@ const DealerNavigator = () => (
     <DealerStack.Screen
       name="BusinessDetails"
       component={BusinessDetailsScreen}
-      options={{ headerShown: false }}
-    />
-    <DealerStack.Screen
-      name="Subscription"
-      component={SubscriptionScreen}
       options={{ headerShown: false }}
     />
     <DealerStack.Screen

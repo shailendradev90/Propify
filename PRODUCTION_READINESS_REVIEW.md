@@ -27,9 +27,9 @@ Your Propify application is **NOT READY for production deployment** in its curre
 
 ```typescript
 const firebaseConfig = {
-  apiKey: 'AIzaSyCrAmX8-R__Baq5oTyoYq-EGLm88uKRDSo',
-  authDomain: 'propify-faaed.firebaseapp.com',
-  projectId: 'propify-faaed',
+  apiKey: '',
+  authDomain: '',
+  projectId: '',
   // ... other credentials
 };
 ```

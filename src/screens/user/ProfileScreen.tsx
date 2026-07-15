@@ -36,15 +36,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       screen: 'BusinessDetails',
     },
     {
-      icon: 'diamond-outline',
-      label: 'Subscription Plan',
-      subtitle: user?.subscriptionPlan
-        ? `Current: ${user.subscriptionPlan.charAt(0).toUpperCase() + user.subscriptionPlan.slice(1)}`
-        : 'Upgrade to unlock features',
-      screen: 'Subscription',
-      badge: user?.subscriptionPlan === 'premium' ? 'PRO' : undefined,
-    },
-    {
       icon: 'home-outline',
       label: 'My Listings',
       subtitle: 'Manage your properties',
@@ -102,17 +93,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   const menuItems = isDealer ? dealerMenuItems : userMenuItems;
 
-  const getPlanColor = () => {
-    switch (user?.subscriptionPlan) {
-      case 'premium':
-        return '#7C3AED';
-      case 'standard':
-        return colors.primary;
-      default:
-        return colors.textMuted;
-    }
-  };
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -123,7 +103,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <LinearGradientOverlay isDealer={isDealer} plan={user?.subscriptionPlan} />
+          <LinearGradientOverlay isDealer={isDealer} />
           <View style={styles.profileCardContent}>
             <View style={styles.avatarContainer}>
               <View style={[styles.avatar, isDealer && styles.avatarDealer]}>
@@ -131,14 +111,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   {user?.fullName?.[0]?.toUpperCase() ?? '?'}
                 </Text>
               </View>
-              {isDealer && user?.subscriptionPlan && (
-                <View style={[styles.planBadge, { backgroundColor: getPlanColor() }]}>
-                  <Ionicons name="diamond" size={8} color={colors.bgWhite} />
-                  <Text style={styles.planBadgeText}>
-                    {user.subscriptionPlan.toUpperCase()}
-                  </Text>
-                </View>
-              )}
             </View>
             <Text style={styles.userName}>{user?.fullName}</Text>
             <View style={styles.roleContainer}>
@@ -258,24 +230,14 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 // Simple gradient overlay for the profile card top
-const LinearGradientOverlay: React.FC<{ isDealer: boolean; plan?: string }> = ({ isDealer, plan }) => {
+const LinearGradientOverlay: React.FC<{ isDealer: boolean }> = ({ isDealer }) => {
   if (!isDealer) return null;
-  const getGradientColors = () => {
-    switch (plan) {
-      case 'premium':
-        return ['#7C3AED', '#4F46E5'];
-      case 'standard':
-        return [colors.primary, colors.primaryDark];
-      default:
-        return [colors.primary + '40', colors.primaryDark + '20'];
-    }
-  };
   return (
     <View
       style={[
         styles.cardGradientOverlay,
         {
-          backgroundColor: getGradientColors()[0],
+          backgroundColor: colors.primary + '40',
           opacity: 0.06,
         },
       ]}
